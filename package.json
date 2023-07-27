@@ -1,0 +1,25 @@
+{
+  "name": "jwt-auth",
+  "version": "1.0.0",
+  "description": "API for jwt-based authentication and authorization",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mkokor/jwt-auth-node-api.git"
+  },
+  "author": "Matija Kokor",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mkokor/jwt-auth-node-api/issues"
+  },
+  "homepage": "https://github.com/mkokor/jwt-auth-node-api#readme",
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
