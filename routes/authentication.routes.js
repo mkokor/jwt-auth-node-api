@@ -3,6 +3,6 @@ const authenticationController = require("../controllers/authentication.controll
 
 const router = express.Router();
 
-router.get("/hello-world", authenticationController.sayHelloWorld);
+router.get("/registration", authenticationController.registerUser);
 
 module.exports = router;
