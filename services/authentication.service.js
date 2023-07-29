@@ -1,5 +1,6 @@
 const { User } = require("../models/User");
 const cryptoHandler = require("../utils/crypto-handler");
+const tokenGenerator = require("../utils/token-generator");
 
 const validatePasswordStrength = (password) => {
   // minimum 8 characters
@@ -59,9 +60,8 @@ const registerUser = async (user) => {
 const logInUser = async (loginData) => {
   const user = await getUserByUsername(loginData.username);
   await validatePassword(loginData.password, user.passwordHash);
-  // Generate JSON Web Token!
   return {
-    accessToken: "json.web.token",
+    accessToken: tokenGenerator.generateAccessToken(user),
   };
 };
 

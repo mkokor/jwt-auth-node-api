@@ -7,4 +7,7 @@ module.exports = {
   application: {
     port: process.env.PORT || 3000,
   },
+  authentication: {
+    accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
+  },
 };
