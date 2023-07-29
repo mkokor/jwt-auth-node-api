@@ -4,34 +4,28 @@ const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
     trim: true,
+    required: [true, "User first name field is required."],
   },
   lastName: {
     type: String,
     trim: true,
+    required: [true, "User last name field is required."],
   },
   username: {
     type: String,
     trim: true,
+    required: [true, "User username field is required."],
   },
   email: {
     type: String,
     trim: true,
+    required: [true, "User email field is required."],
   },
-  passwordHash: String,
-});
-
-// Pre middleware function is set up mannually so that the server can control Mongoose validation errors.
-userSchema.pre("validate", function () {
-  if (
-    !this.firstName ||
-    !this.lastName ||
-    !this.username ||
-    !this.email ||
-    !this.passwordHash
-  )
-    throw new Error(
-      "Incomplete data! Provide: first name, last name, username, email and password."
-    );
+  passwordHash: {
+    type: String,
+    trim: true,
+    required: [true, "User password hash field is required."],
+  },
 });
 
 const User = mongoose.model("User", userSchema);
