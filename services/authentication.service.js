@@ -11,7 +11,24 @@ const validatePasswordStrength = (password) => {
     throw new Error("Unsecure password.");
 };
 
+const getUserByFieldValue = async (fieldName, value) => {
+  const user = await User.findOne({ [fieldName]: value });
+  return user;
+};
+
+const checkUsernameAvailabilty = async (username) => {
+  const user = await getUserByFieldValue("username", username);
+  if (user) throw new Error(`Provided username is not available.`);
+};
+
+const checkEmailAvailabilty = async (email) => {
+  const user = await getUserByFieldValue("email", email);
+  if (user) throw new Error(`Provided email is not available.`);
+};
+
 const registerUser = async (user) => {
+  await checkUsernameAvailabilty(user.username);
+  await checkEmailAvailabilty(user.email);
   validatePasswordStrength(user.password);
   user.passwordHash = await cryptoHandler.encrypt(user.password);
   delete user.password;
