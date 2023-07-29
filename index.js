@@ -6,15 +6,17 @@ const environment = require("./config/environment");
 const { connectDatabase } = require("./config/database-connection");
 const { notFoundRoute } = require("./middleware/not-found");
 const { errorHandler } = require("./middleware/error-handler");
+const { checkLoginData } = require("./middleware/login-data-check");
 const {
   checkRegistrationData,
 } = require("./middleware/registration-data-check");
 
 const app = express();
-const port = 3000;
+const port = environment.application.port;
 
 app.use(bodyParser.json());
 app.use("/api/authentication/registration", checkRegistrationData);
+app.use("/api/authentication/login", checkLoginData);
 
 app.use("/api/authentication", authenticationRoutes);
 app.use(notFoundRoute);

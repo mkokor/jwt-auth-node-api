@@ -4,5 +4,6 @@ const authenticationController = require("../controllers/authentication.controll
 const router = express.Router();
 
 router.get("/registration", authenticationController.registerUser);
+router.get("/login", authenticationController.logInUser);
 
 module.exports = router;

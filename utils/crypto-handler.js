@@ -9,6 +9,12 @@ const encrypt = async (value) => {
   return result;
 };
 
+const compare = async (plaintext, encryptedValue) => {
+  const result = await bcrypt.compare(plaintext, encryptedValue);
+  return result;
+};
+
 module.exports = {
   encrypt,
+  compare,
 };

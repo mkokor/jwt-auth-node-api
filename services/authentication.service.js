@@ -31,6 +31,20 @@ const hashPassword = async (user) => {
   return user;
 };
 
+const getUserByUsername = async (username) => {
+  const user = await getUserByFieldValue("username", username);
+  if (!user) throw new Error("User with provided username does not exist.");
+  return user;
+};
+
+const validatePassword = async (plaintextPassword, passwordHash) => {
+  const passwordMatch = await cryptoHandler.compare(
+    plaintextPassword,
+    passwordHash
+  );
+  if (!passwordMatch) throw new Error("Password does not match the username.");
+};
+
 const registerUser = async (user) => {
   await checkUsernameAvailabilty(user.username);
   await checkEmailAvailabilty(user.email);
@@ -42,6 +56,16 @@ const registerUser = async (user) => {
   };
 };
 
+const logInUser = async (loginData) => {
+  const user = await getUserByUsername(loginData.username);
+  await validatePassword(loginData.password, user.passwordHash);
+  // Generate JSON Web Token!
+  return {
+    accessToken: "json.web.token",
+  };
+};
+
 module.exports = {
   registerUser,
+  logInUser,
 };
