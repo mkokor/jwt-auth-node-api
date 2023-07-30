@@ -8,12 +8,23 @@ const generateJwt = (payload, secretKey, expirationTime) => {
   });
 };
 
+const verifyJwt = async (tokenValue, secretKey) => {
+  try {
+    const { username } = await jwt.verify(tokenValue, secretKey);
+    return { username };
+  } catch (error) {
+    throw new Error(
+      `${error.message.replace(new RegExp("jwt"), "Access token")}.`
+    );
+  }
+};
+
 const generateAccessToken = (user) => {
   const payload = { username: user.username };
   return generateJwt(
     payload,
     environment.authentication.accessTokenSecret,
-    "30s"
+    "15min"
   );
 };
 
@@ -26,7 +37,16 @@ const generateRefreshToken = (user) => {
   );
 };
 
+const verifyAccessToken = async (accessToken) => {
+  const user = await verifyJwt(
+    accessToken,
+    environment.authentication.accessTokenSecret
+  );
+  return user;
+};
+
 module.exports = {
   generateAccessToken,
   generateRefreshToken,
+  verifyAccessToken,
 };

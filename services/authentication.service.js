@@ -1,7 +1,7 @@
 const { User } = require("../models/User");
 const { RefreshToken } = require("../models/RefreshToken");
 const cryptoHandler = require("../utils/crypto-handler");
-const tokenGenerator = require("../utils/token-generator");
+const tokenGenerator = require("../utils/token-utility");
 
 const validatePasswordStrength = (password) => {
   // minimum 8 characters
