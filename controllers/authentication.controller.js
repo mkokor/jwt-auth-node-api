@@ -16,7 +16,15 @@ const logInUser = async (req, res) => {
   res.status(200).json({ accessToken });
 };
 
+const refreshAccessToken = (req, res, next) => {
+  console.log(req.cookies);
+  res.status(200).json({
+    accessToken: "Matija",
+  });
+};
+
 module.exports = {
   registerUser,
   logInUser,
+  refreshAccessToken,
 };

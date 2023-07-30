@@ -1,6 +1,7 @@
 require("express-async-errors");
 const express = require("express");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 const authenticationRoutes = require("./routes/authentication.routes");
 const usersRoutes = require("./routes/users.routes");
 const environment = require("./config/environment");
@@ -16,6 +17,8 @@ const app = express();
 const port = environment.application.port;
 
 app.use(bodyParser.json());
+app.use(cookieParser());
+
 app.use("/api/authentication/registration", checkRegistrationData);
 app.use("/api/authentication/login", checkLoginData);
 
