@@ -1,4 +1,5 @@
 const { User } = require("../models/User");
+const { RefreshToken } = require("../models/RefreshToken");
 const cryptoHandler = require("../utils/crypto-handler");
 const tokenGenerator = require("../utils/token-generator");
 
@@ -46,6 +47,15 @@ const validatePassword = async (plaintextPassword, passwordHash) => {
   if (!passwordMatch) throw new Error("Password does not match the username.");
 };
 
+const createRefreshToken = async (user) => {
+  const refreshToken = await RefreshToken.findOneAndUpdate(
+    { owner: user._id },
+    { value: tokenGenerator.generateRefreshToken(user) },
+    { upsert: true, new: true }
+  );
+  return refreshToken.value;
+};
+
 const registerUser = async (user) => {
   await checkUsernameAvailabilty(user.username);
   await checkEmailAvailabilty(user.email);
@@ -60,8 +70,10 @@ const registerUser = async (user) => {
 const logInUser = async (loginData) => {
   const user = await getUserByUsername(loginData.username);
   await validatePassword(loginData.password, user.passwordHash);
+  const refreshToken = await createRefreshToken(user);
   return {
     accessToken: tokenGenerator.generateAccessToken(user),
+    refreshToken: refreshToken,
   };
 };
 

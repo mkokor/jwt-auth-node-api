@@ -9,5 +9,7 @@ module.exports = {
   },
   authentication: {
     accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
+    refreshTokenSecret: process.env.REFRESH_TOKEN_SECRET,
+    jwtIssuer: process.env.JWT_ISSUER,
   },
 };
