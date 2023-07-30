@@ -2,6 +2,7 @@ require("express-async-errors");
 const express = require("express");
 const bodyParser = require("body-parser");
 const authenticationRoutes = require("./routes/authentication.routes");
+const usersRoutes = require("./routes/users.routes");
 const environment = require("./config/environment");
 const { connectDatabase } = require("./config/database-connection");
 const { notFoundRoute } = require("./middleware/not-found");
@@ -19,6 +20,7 @@ app.use("/api/authentication/registration", checkRegistrationData);
 app.use("/api/authentication/login", checkLoginData);
 
 app.use("/api/authentication", authenticationRoutes);
+app.use("/api/users/", usersRoutes);
 app.use(notFoundRoute);
 
 app.use(errorHandler);
