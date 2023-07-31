@@ -2,9 +2,11 @@ require("express-async-errors");
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 const authenticationRoutes = require("./routes/authentication.routes");
 const usersRoutes = require("./routes/users.routes");
 const environment = require("./config/environment");
+const corsOptions = require("./config/cors-options");
 const { connectDatabase } = require("./config/database-connection");
 const { notFoundRoute } = require("./middleware/not-found");
 const { errorHandler } = require("./middleware/error-handler");
@@ -16,6 +18,8 @@ const {
 
 const app = express();
 const port = environment.application.port;
+
+app.use(cors(corsOptions));
 
 app.use(bodyParser.json());
 app.use(cookieParser());
