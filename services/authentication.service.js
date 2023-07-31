@@ -77,7 +77,14 @@ const logInUser = async (loginData) => {
   };
 };
 
+const refreshAccessToken = async (refreshToken) => {
+  return {
+    accessToken: "json.web.token",
+  };
+};
+
 module.exports = {
   registerUser,
   logInUser,
+  refreshAccessToken,
 };

@@ -17,7 +17,6 @@ const logInUser = async (req, res) => {
 };
 
 const refreshAccessToken = (req, res, next) => {
-  console.log(req.cookies);
   res.status(200).json({
     accessToken: "Matija",
   });

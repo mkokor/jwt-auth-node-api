@@ -9,6 +9,7 @@ const { connectDatabase } = require("./config/database-connection");
 const { notFoundRoute } = require("./middleware/not-found");
 const { errorHandler } = require("./middleware/error-handler");
 const { checkLoginData } = require("./middleware/login-data-check");
+const { checkRefreshToken } = require("./middleware/refresh-token-check");
 const {
   checkRegistrationData,
 } = require("./middleware/registration-data-check");
@@ -21,6 +22,7 @@ app.use(cookieParser());
 
 app.use("/api/authentication/registration", checkRegistrationData);
 app.use("/api/authentication/login", checkLoginData);
+app.use("/api/authentication/access-token-refresh", checkRefreshToken);
 
 app.use("/api/authentication", authenticationRoutes);
 app.use("/api/users/", usersRoutes);
