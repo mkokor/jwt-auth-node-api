@@ -1,7 +1,7 @@
 const { User } = require("../models/User");
 const { RefreshToken } = require("../models/RefreshToken");
 const cryptoHandler = require("../utils/crypto-handler");
-const tokenGenerator = require("../utils/token-utility");
+const tokenUtility = require("../utils/token-utility");
 
 const validatePasswordStrength = (password) => {
   // minimum 8 characters
@@ -50,10 +50,24 @@ const validatePassword = async (plaintextPassword, passwordHash) => {
 const createRefreshToken = async (user) => {
   const refreshToken = await RefreshToken.findOneAndUpdate(
     { owner: user._id },
-    { value: tokenGenerator.generateRefreshToken(user) },
+    { value: tokenUtility.generateRefreshToken(user) },
     { upsert: true, new: true }
   );
   return refreshToken.value;
+};
+
+const getRefreshTokenByValue = async (refreshTokenValue) => {
+  const refreshToken = await RefreshToken.findOne({
+    value: refreshTokenValue,
+  }).populate("owner");
+  if (!refreshToken) throw new Error("Invalid refresh token.");
+  return refreshToken;
+};
+
+const validateRefreshToken = async (refreshTokenValue) => {
+  const refreshToken = await getRefreshTokenByValue(refreshTokenValue);
+  await tokenUtility.verifyRefreshToken(refreshToken.value);
+  return refreshToken.owner;
 };
 
 const registerUser = async (user) => {
@@ -72,14 +86,15 @@ const logInUser = async (loginData) => {
   await validatePassword(loginData.password, user.passwordHash);
   const refreshToken = await createRefreshToken(user);
   return {
-    accessToken: tokenGenerator.generateAccessToken(user),
+    accessToken: tokenUtility.generateAccessToken(user),
     refreshToken: refreshToken,
   };
 };
 
-const refreshAccessToken = async (refreshToken) => {
+const refreshAccessToken = async (refreshTokenValue) => {
+  const user = await validateRefreshToken(refreshTokenValue);
   return {
-    accessToken: "json.web.token",
+    accessToken: tokenUtility.generateAccessToken(user),
   };
 };
 

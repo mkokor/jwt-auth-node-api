@@ -16,9 +16,12 @@ const logInUser = async (req, res) => {
   res.status(200).json({ accessToken });
 };
 
-const refreshAccessToken = (req, res, next) => {
+const refreshAccessToken = async (req, res, next) => {
+  const { accessToken } = await authenticationService.refreshAccessToken(
+    req.cookies.refreshToken
+  );
   res.status(200).json({
-    accessToken: "Matija",
+    accessToken: accessToken,
   });
 };
 

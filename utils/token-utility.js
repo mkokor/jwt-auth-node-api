@@ -8,14 +8,12 @@ const generateJwt = (payload, secretKey, expirationTime) => {
   });
 };
 
-const verifyJwt = async (tokenValue, secretKey) => {
+const verifyJwt = async (tokenValue, secretKey, tokenType = "JWT") => {
   try {
     const { username } = await jwt.verify(tokenValue, secretKey);
     return { username };
   } catch (error) {
-    throw new Error(
-      `${error.message.replace(new RegExp("jwt"), "Access token")}.`
-    );
+    throw new Error(`Invalid ${tokenType}.`);
   }
 };
 
@@ -33,14 +31,24 @@ const generateRefreshToken = (user) => {
   return generateJwt(
     payload,
     environment.authentication.refreshTokenSecret,
-    "1d"
+    "20s"
   );
 };
 
 const verifyAccessToken = async (accessToken) => {
   const user = await verifyJwt(
     accessToken,
-    environment.authentication.accessTokenSecret
+    environment.authentication.accessTokenSecret,
+    "access token"
+  );
+  return user;
+};
+
+const verifyRefreshToken = async (refreshToken) => {
+  const user = await verifyJwt(
+    refreshToken,
+    environment.authentication.refreshTokenSecret,
+    "refresh token"
   );
   return user;
 };
@@ -49,4 +57,5 @@ module.exports = {
   generateAccessToken,
   generateRefreshToken,
   verifyAccessToken,
+  verifyRefreshToken,
 };
