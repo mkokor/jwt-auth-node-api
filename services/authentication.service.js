@@ -98,8 +98,13 @@ const refreshAccessToken = async (refreshTokenValue) => {
   };
 };
 
+const logOutUser = async (refreshTokenValue) => {
+  await RefreshToken.findOneAndDelete({ value: refreshTokenValue });
+};
+
 module.exports = {
   registerUser,
   logInUser,
   refreshAccessToken,
+  logOutUser,
 };

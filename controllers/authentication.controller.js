@@ -16,7 +16,7 @@ const logInUser = async (req, res) => {
   res.status(200).json({ accessToken });
 };
 
-const refreshAccessToken = async (req, res, next) => {
+const refreshAccessToken = async (req, res) => {
   const { accessToken } = await authenticationService.refreshAccessToken(
     req.cookies.refreshToken
   );
@@ -25,8 +25,19 @@ const refreshAccessToken = async (req, res, next) => {
   });
 };
 
+const logOutUser = async (req, res) => {
+  await authenticationService.logOutUser(req.cookies.refreshToken);
+  // Client side should delete access token from local storage (or other storage system)!
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 24,
+  });
+  res.status(200).json({ message: "User successfully logged out." });
+};
+
 module.exports = {
   registerUser,
   logInUser,
   refreshAccessToken,
+  logOutUser,
 };
