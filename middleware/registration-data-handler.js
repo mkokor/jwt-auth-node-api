@@ -12,6 +12,19 @@ const checkRegistrationData = (req, res, next) => {
   next();
 };
 
+const extractRequiredData = (req, res, next) => {
+  // Disables user to pass roles values.
+  req.body = {
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    username: req.body.username,
+    email: req.body.email,
+    password: req.body.password,
+  };
+  next();
+};
+
 module.exports = {
   checkRegistrationData,
+  extractRequiredData,
 };

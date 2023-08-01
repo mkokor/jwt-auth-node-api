@@ -13,9 +13,7 @@ const { notFoundRoute } = require("./middleware/not-found");
 const { errorHandler } = require("./middleware/error-handler");
 const { checkLoginData } = require("./middleware/login-data-check");
 const { checkRefreshToken } = require("./middleware/refresh-token-check");
-const {
-  checkRegistrationData,
-} = require("./middleware/registration-data-check");
+const registrationDataHandler = require("./middleware/registration-data-handler");
 
 const app = express();
 const port = environment.application.port;
@@ -25,7 +23,14 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-app.use("/api/authentication/registration", checkRegistrationData);
+app.use(
+  "/api/authentication/registration",
+  registrationDataHandler.checkRegistrationData
+);
+app.use(
+  "/api/authentication/registration",
+  registrationDataHandler.extractRequiredData
+);
 app.use("/api/authentication/login", checkLoginData);
 app.use("/api/authentication/access-token-refresh", checkRefreshToken);
 

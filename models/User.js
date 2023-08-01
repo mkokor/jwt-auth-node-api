@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema({
     trim: true,
     required: [true, "User password hash field is required."],
   },
+  roles: [{ type: mongoose.Schema.Types.ObjectId, ref: "Role" }],
 });
 
 const User = mongoose.model("User", userSchema);

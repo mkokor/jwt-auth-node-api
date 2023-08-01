@@ -1,5 +1,6 @@
 const { User } = require("../models/User");
 const { RefreshToken } = require("../models/RefreshToken");
+const { Role } = require("../models/Role");
 const cryptoHandler = require("../utils/crypto-handler");
 const tokenUtility = require("../utils/token-utility");
 
@@ -31,6 +32,12 @@ const hashPassword = async (user) => {
   user.passwordHash = await cryptoHandler.encrypt(user.password);
   delete user.password;
   return user;
+};
+
+const getRoleByName = async (name) => {
+  const basicUserRole = await Role.findOne({ name: name });
+  if (!basicUserRole) throw new Error("Something went wrong.");
+  return basicUserRole;
 };
 
 const getUserByUsername = async (username) => {
@@ -75,7 +82,8 @@ const registerUser = async (user) => {
   await checkEmailAvailabilty(user.email);
   validatePasswordStrength(user.password);
   user = await hashPassword(user);
-  await User.create(user);
+  basicUserRole = await getRoleByName("Basic User"); // On self-registration role is Basic User.
+  await User.create({ ...user, roles: [basicUserRole._id] });
   return {
     message: "User successfully registered.",
   };
