@@ -7,7 +7,8 @@ const authenticationRoutes = require("./routes/authentication.routes");
 const usersRoutes = require("./routes/users.routes");
 const environment = require("./config/environment");
 const corsOptions = require("./config/cors-options");
-const { connectDatabase } = require("./config/database-connection");
+const { connectDatabase } = require("./config/database");
+const { seedDatabase } = require("./config/database");
 const { notFoundRoute } = require("./middleware/not-found");
 const { errorHandler } = require("./middleware/error-handler");
 const { checkLoginData } = require("./middleware/login-data-check");
@@ -37,6 +38,7 @@ app.use(errorHandler);
 const runServer = async () => {
   try {
     await connectDatabase(environment.database.connectionString);
+    await seedDatabase();
     app.listen(port, () => {
       console.log(`Server is listening on port ${port}...`);
     });
