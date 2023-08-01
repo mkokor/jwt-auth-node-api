@@ -9,7 +9,9 @@ const processAuthorizationHeader = (authorizationHeader) => {
 
 const authenticateUser = async (req, res, next) => {
   req.user = await verifyAccessToken(
-    processAuthorizationHeader(req.headers["authorization"])
+    processAuthorizationHeader(
+      req.headers.authorization || req.headers.Authorization
+    )
   );
   next();
 };
