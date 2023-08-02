@@ -10,8 +10,9 @@ const seedDatabase = async () => {
     roles: [{ name: "Admin" }, { name: "Basic User" }],
   };
 
-  await Role.deleteMany(); // In development mode server will be restarted multiple times.
-  await Role.insertMany(seedData.roles);
+  const result = await Role.find();
+  // In development mode server will be restarted multiple times.
+  if (result.length === 0) await Role.insertMany(seedData.roles);
 };
 
 module.exports = {

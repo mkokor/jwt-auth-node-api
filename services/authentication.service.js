@@ -13,7 +13,7 @@ const validatePasswordStrength = (password) => {
 };
 
 const getUserByFieldValue = async (fieldName, value) => {
-  const user = await User.findOne({ [fieldName]: value });
+  const user = await User.findOne({ [fieldName]: value }).populate("roles");
   return user;
 };
 

@@ -20,7 +20,7 @@ const verifyJwt = (tokenValue, secretKey, tokenType = "JWT") => {
 const generateAccessToken = (user) => {
   const payload = {
     username: user.username,
-    roles: user.roles,
+    roles: user.roles.map((role) => role.name), // Roles names should be present in access token (not identifiers).
   };
   return generateJwt(
     payload,
