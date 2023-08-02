@@ -1,7 +1,9 @@
 const authorizeUser = (allowedRoles) => {
   return (req, res, next) => {
-    console.log(allowedRoles);
-    console.log(req.user.roles);
+    const result = req.user.roles
+      .map((role) => allowedRoles.includes(role))
+      .filter((role) => role === true);
+    if (result.length === 0) throw new Error("User unauthorized.");
     next();
   };
 };
