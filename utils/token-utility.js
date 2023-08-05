@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const environment = require("../config/environment");
+const errors = require("../errors/errors");
 
 const generateJwt = (payload, secretKey, expirationTime) => {
   return jwt.sign(payload, secretKey, {
@@ -13,7 +14,7 @@ const verifyJwt = (tokenValue, secretKey, tokenType = "JWT") => {
     const claims = jwt.verify(tokenValue, secretKey);
     return claims;
   } catch (error) {
-    throw new Error(`Invalid ${tokenType}.`);
+    throw new errors.UnauthenticatedError(`Invalid ${tokenType}.`);
   }
 };
 

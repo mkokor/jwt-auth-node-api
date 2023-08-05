@@ -3,13 +3,14 @@ const { RefreshToken } = require("../models/RefreshToken");
 const { Role } = require("../models/Role");
 const cryptoHandler = require("../utils/crypto-handler");
 const tokenUtility = require("../utils/token-utility");
+const errors = require("../errors/errors");
 
 const validatePasswordStrength = (password) => {
   // minimum 8 characters
   // minimum one digit
   // minimum one special character
   if (!password.match(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/))
-    throw new Error("Unsecure password.");
+    throw new errors.BadRequestError("Unsecure password.");
 };
 
 const getUserByFieldValue = async (fieldName, value) => {
@@ -19,12 +20,14 @@ const getUserByFieldValue = async (fieldName, value) => {
 
 const checkUsernameAvailabilty = async (username) => {
   const user = await getUserByFieldValue("username", username);
-  if (user) throw new Error(`Provided username is not available.`);
+  if (user)
+    throw new errors.BadRequestError(`Provided username is not available.`);
 };
 
 const checkEmailAvailabilty = async (email) => {
   const user = await getUserByFieldValue("email", email);
-  if (user) throw new Error(`Provided email is not available.`);
+  if (user)
+    throw new errors.BadRequestError(`Provided email is not available.`);
 };
 
 // This function convert password field of user to passwordHash field (field name and field value).
@@ -42,7 +45,10 @@ const getRoleByName = async (name) => {
 
 const getUserByUsername = async (username) => {
   const user = await getUserByFieldValue("username", username);
-  if (!user) throw new Error("User with provided username does not exist.");
+  if (!user)
+    throw new errors.NotFoundError(
+      "User with provided username does not exist."
+    );
   return user;
 };
 
@@ -51,17 +57,13 @@ const validatePassword = async (plaintextPassword, passwordHash) => {
     plaintextPassword,
     passwordHash
   );
-  if (!passwordMatch) throw new Error("Password does not match the username.");
+  if (!passwordMatch)
+    throw new errors.UnauthenticatedError(
+      "Password does not match the username."
+    );
 };
 
 const createRefreshToken = async (user) => {
-  /*
-  const refreshToken = await RefreshToken.findOneAndUpdate(
-    { owner: user._id },
-    { value: tokenUtility.generateRefreshToken(user) },
-    { upsert: true, new: true }
-  );
-  */
   const refreshToken = await RefreshToken.create({
     value: tokenUtility.generateRefreshToken(user),
     owner: user._id,
@@ -73,7 +75,8 @@ const getRefreshTokenByValue = async (refreshTokenValue) => {
   const refreshToken = await RefreshToken.findOne({
     value: refreshTokenValue,
   }).populate("owner");
-  if (!refreshToken) throw new Error("Invalid refresh token.");
+  if (!refreshToken)
+    throw new errors.UnauthenticatedError("Invalid refresh token.");
   return refreshToken;
 };
 
@@ -87,7 +90,7 @@ const validateRefreshToken = async (refreshTokenValue) => {
     await tokenUtility.verifyRefreshToken(refreshToken.value);
   } catch (error) {
     await deleteRefreshToken(refreshTokenValue);
-    throw new Error("Invalid refresh token.");
+    throw new errors.UnauthenticatedError("Invalid refresh token.");
   }
   return refreshToken.owner;
 };

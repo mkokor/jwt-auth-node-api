@@ -1,3 +1,5 @@
+const errors = require("../errors/errors");
+
 const checkRegistrationData = (req, res, next) => {
   if (
     !req.body.firstName ||
@@ -6,7 +8,7 @@ const checkRegistrationData = (req, res, next) => {
     !req.body.email ||
     !req.body.password
   )
-    throw new Error(
+    throw new errors.BadRequestError(
       "Incomplete data! Provide: first name, last name, username, email and password."
     );
   next();

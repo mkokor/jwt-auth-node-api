@@ -1,9 +1,12 @@
 const { verifyAccessToken } = require("../utils/token-utility");
+const errors = require("../errors/errors");
 
 const processAuthorizationHeader = (authorizationHeader) => {
   const keyword = authorizationHeader.split(" ")[0];
   if (keyword !== "Bearer")
-    throw new Error("Invalid authorization header format.");
+    throw new errors.UnauthenticatedError(
+      "Invalid authorization header format."
+    );
   return authorizationHeader.split(" ")["1"];
 };
 
