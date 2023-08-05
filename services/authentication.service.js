@@ -101,8 +101,10 @@ const logInUser = async (loginData) => {
 
 const refreshAccessToken = async (refreshTokenValue) => {
   const user = await validateRefreshToken(refreshTokenValue);
+  const refreshToken = await createRefreshToken(user);
   return {
     accessToken: tokenUtility.generateAccessToken(user),
+    refreshToken,
   };
 };
 
