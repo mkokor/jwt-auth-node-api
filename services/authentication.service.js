@@ -73,7 +73,12 @@ const getRefreshTokenByValue = async (refreshTokenValue) => {
 
 const validateRefreshToken = async (refreshTokenValue) => {
   const refreshToken = await getRefreshTokenByValue(refreshTokenValue);
-  await tokenUtility.verifyRefreshToken(refreshToken.value);
+  try {
+    await tokenUtility.verifyRefreshToken(refreshToken.value);
+  } catch (error) {
+    await RefreshToken.findOneAndDelete({ value: refreshTokenValue });
+    throw new Error("Invalid refresh token.");
+  }
   return refreshToken.owner;
 };
 
