@@ -34,7 +34,7 @@ const generateRefreshToken = (user) => {
   return generateJwt(
     payload,
     environment.authentication.refreshTokenSecret,
-    "10s"
+    "1d"
   );
 };
 

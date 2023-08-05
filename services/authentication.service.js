@@ -55,11 +55,17 @@ const validatePassword = async (plaintextPassword, passwordHash) => {
 };
 
 const createRefreshToken = async (user) => {
+  /*
   const refreshToken = await RefreshToken.findOneAndUpdate(
     { owner: user._id },
     { value: tokenUtility.generateRefreshToken(user) },
     { upsert: true, new: true }
   );
+  */
+  const refreshToken = await RefreshToken.create({
+    value: tokenUtility.generateRefreshToken(user),
+    owner: user._id,
+  });
   return refreshToken.value;
 };
 
@@ -71,12 +77,16 @@ const getRefreshTokenByValue = async (refreshTokenValue) => {
   return refreshToken;
 };
 
+const deleteRefreshToken = async (refreshTokenValue) => {
+  await RefreshToken.findOneAndDelete({ value: refreshTokenValue });
+};
+
 const validateRefreshToken = async (refreshTokenValue) => {
   const refreshToken = await getRefreshTokenByValue(refreshTokenValue);
   try {
     await tokenUtility.verifyRefreshToken(refreshToken.value);
   } catch (error) {
-    await RefreshToken.findOneAndDelete({ value: refreshTokenValue });
+    await deleteRefreshToken(refreshTokenValue);
     throw new Error("Invalid refresh token.");
   }
   return refreshToken.owner;
@@ -106,6 +116,7 @@ const logInUser = async (loginData) => {
 
 const refreshAccessToken = async (refreshTokenValue) => {
   const user = await validateRefreshToken(refreshTokenValue);
+  await deleteRefreshToken(refreshTokenValue);
   const refreshToken = await createRefreshToken(user);
   return {
     accessToken: tokenUtility.generateAccessToken(user),
