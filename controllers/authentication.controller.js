@@ -1,4 +1,5 @@
 const authenticationService = require("../services/authentication.service");
+const { StatusCodes } = require("http-status-codes");
 
 const setRefreshTokenCookie = (res, refreshToken) => {
   res.cookie("refreshToken", refreshToken, {
@@ -11,7 +12,7 @@ const setRefreshTokenCookie = (res, refreshToken) => {
 
 const registerUser = async (req, res) => {
   const result = await authenticationService.registerUser(req.body);
-  res.status(201).json(result);
+  res.status(StatusCodes.CREATED).json(result);
 };
 
 const logInUser = async (req, res) => {
@@ -19,14 +20,14 @@ const logInUser = async (req, res) => {
     req.body
   );
   setRefreshTokenCookie(res, refreshToken);
-  res.status(200).json({ accessToken });
+  res.status(StatusCodes.OK).json({ accessToken });
 };
 
 const refreshAccessToken = async (req, res) => {
   const { accessToken, refreshToken } =
     await authenticationService.refreshAccessToken(req.cookies.refreshToken);
   setRefreshTokenCookie(res, refreshToken);
-  res.status(200).json({
+  res.status(StatusCodes.OK).json({
     accessToken,
   });
 };
@@ -39,7 +40,7 @@ const logOutUser = async (req, res) => {
     sameSite: "None",
     // secure: true,
   });
-  res.status(200).json({ message: "User successfully logged out." });
+  res.status(StatusCodes.OK).json({ message: "User successfully logged out." });
 };
 
 module.exports = {

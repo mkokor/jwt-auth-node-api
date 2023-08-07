@@ -1,5 +1,7 @@
+const { StatusCodes } = require("http-status-codes");
+
 const notFoundRoute = (req, res, next) => {
-  res.status(404).json({
+  res.status(StatusCodes.NOT_FOUND).json({
     message: "Invalid route.",
   });
 };
