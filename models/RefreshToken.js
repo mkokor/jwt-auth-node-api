@@ -2,9 +2,10 @@ const mongoose = require("mongoose");
 
 const refreshTokenSchema = new mongoose.Schema(
   {
-    value: {
+    // Database keep encrypted value of refresh token for security reasons.
+    valueHash: {
       type: String,
-      required: [true, "Refresh token value field is required."],
+      required: [true, "Refresh token value hash field is required."],
     },
     // expirationDate: {
     //   type: String,

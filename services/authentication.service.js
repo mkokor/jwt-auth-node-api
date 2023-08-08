@@ -64,30 +64,39 @@ const validatePassword = async (plaintextPassword, passwordHash) => {
 };
 
 const createRefreshToken = async (user) => {
-  const refreshToken = await RefreshToken.create({
-    value: tokenUtility.generateRefreshToken(user),
+  const refreshTokenValue = tokenUtility.generateRefreshToken(user);
+  await RefreshToken.create({
+    valueHash: await cryptoHandler.encrypt(refreshTokenValue),
     owner: user._id,
   });
-  return refreshToken.value;
+  return refreshTokenValue;
 };
 
-const getRefreshTokenByValue = async (refreshTokenValue) => {
-  const refreshToken = await RefreshToken.findOne({
-    value: refreshTokenValue,
-  }).populate("owner");
-  if (!refreshToken)
+const getRefreshTokenByValue = async (value) => {
+  const refreshTokens = await RefreshToken.find().populate("owner");
+  const result = await Promise.all(
+    refreshTokens.filter(async (refreshToken) => {
+      const validation = await cryptoHandler.compare(
+        value,
+        refreshToken.valueHash
+      );
+      return validation;
+    })
+  );
+  if (result.length === 0)
     throw new errors.UnauthenticatedError("Invalid refresh token.");
-  return refreshToken;
+  return result[0];
 };
 
 const deleteRefreshToken = async (refreshTokenValue) => {
-  await RefreshToken.findOneAndDelete({ value: refreshTokenValue });
+  const refreshToken = await getRefreshTokenByValue(refreshTokenValue);
+  await RefreshToken.findByIdAndDelete({ _id: refreshToken._id });
 };
 
 const validateRefreshToken = async (refreshTokenValue) => {
   const refreshToken = await getRefreshTokenByValue(refreshTokenValue);
   try {
-    await tokenUtility.verifyRefreshToken(refreshToken.value);
+    await tokenUtility.verifyRefreshToken(refreshTokenValue);
   } catch (error) {
     await deleteRefreshToken(refreshTokenValue);
     throw new errors.UnauthenticatedError("Invalid refresh token.");
@@ -128,7 +137,7 @@ const refreshAccessToken = async (refreshTokenValue) => {
 };
 
 const logOutUser = async (refreshTokenValue) => {
-  await RefreshToken.findOneAndDelete({ value: refreshTokenValue });
+  await deleteRefreshToken(refreshTokenValue);
 };
 
 module.exports = {
