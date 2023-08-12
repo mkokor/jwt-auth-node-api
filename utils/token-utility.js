@@ -2,7 +2,6 @@ const jwt = require("jsonwebtoken");
 const environment = require("../config/environment");
 const errors = require("../errors/errors");
 const cryptoHandler = require("./crypto-handler");
-const { RefreshToken } = require("../models/RefreshToken");
 
 const generateJwt = (payload, secretKey, expirationTime) => {
   return jwt.sign(payload, secretKey, {
@@ -34,17 +33,17 @@ const generateAccessToken = (user) => {
 
 const getRefreshTokenExpirationDate = () => {
   let date = new Date();
-  date.setDate(date.getDate() - 1);
+  date.setDate(date.getDate() + 1);
   return new Date(date);
 };
 
 const createRefreshToken = async (user) => {
   const refreshTokenValue = cryptoHandler.generateRandomString();
-  const refreshToken = await RefreshToken.create({
+  const refreshToken = {
     valueHash: await cryptoHandler.hash(refreshTokenValue),
     expirationDate: getRefreshTokenExpirationDate(),
     owner: user._id,
-  });
+  };
   return {
     refreshToken,
     refreshTokenValue,

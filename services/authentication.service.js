@@ -64,7 +64,9 @@ const validatePassword = async (plaintextPassword, passwordHash) => {
 };
 
 const createRefreshToken = async (user) => {
-  const { refreshTokenValue } = await tokenUtility.createRefreshToken(user);
+  const { refreshToken, refreshTokenValue } =
+    await tokenUtility.createRefreshToken(user);
+  await RefreshToken.create(refreshToken);
   return refreshTokenValue;
 };
 
