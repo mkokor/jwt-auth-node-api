@@ -2,6 +2,8 @@ const { verifyAccessToken } = require("../utils/token-utility");
 const errors = require("../errors/errors");
 
 const processAuthorizationHeader = (authorizationHeader) => {
+  if (!authorizationHeader)
+    throw new errors.UnauthenticatedError("Access token missing.");
   const keyword = authorizationHeader.split(" ")[0];
   if (keyword !== "Bearer")
     throw new errors.UnauthenticatedError(
