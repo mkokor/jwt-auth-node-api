@@ -7,7 +7,7 @@ const processAuthorizationHeader = (authorizationHeader) => {
     throw new errors.UnauthenticatedError(
       "Invalid authorization header format."
     );
-  return authorizationHeader.split(" ")["1"];
+  return authorizationHeader.split(" ")[1];
 };
 
 const authenticateUser = async (req, res, next) => {
