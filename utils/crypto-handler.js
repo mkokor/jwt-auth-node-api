@@ -1,10 +1,15 @@
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 
 const getNumberOfSaltRounds = () => {
   return 10;
 };
 
-const encrypt = async (value) => {
+const generateRandomString = () => {
+  return crypto.randomBytes(64).toString("hex");
+};
+
+const hash = async (value) => {
   const result = await bcrypt.hash(value, getNumberOfSaltRounds());
   return result;
 };
@@ -15,6 +20,7 @@ const compare = async (plaintext, encryptedValue) => {
 };
 
 module.exports = {
-  encrypt,
+  hash,
   compare,
+  generateRandomString,
 };

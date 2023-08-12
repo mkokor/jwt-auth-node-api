@@ -1,10 +1,12 @@
 const jwt = require("jsonwebtoken");
 const environment = require("../config/environment");
 const errors = require("../errors/errors");
+const cryptoHandler = require("./crypto-handler");
+const { RefreshToken } = require("../models/RefreshToken");
 
 const generateJwt = (payload, secretKey, expirationTime) => {
   return jwt.sign(payload, secretKey, {
-    issuer: environment.authentication.jwtIssuer,
+    issuer: environment.authentication.jwt.issuer,
     expiresIn: expirationTime,
   });
 };
@@ -25,24 +27,34 @@ const generateAccessToken = (user) => {
   };
   return generateJwt(
     payload,
-    environment.authentication.accessTokenSecret,
+    environment.authentication.accessToken.secret,
     "15min"
   );
 };
 
-const generateRefreshToken = (user) => {
-  const payload = { username: user.username };
-  return generateJwt(
-    payload,
-    environment.authentication.refreshTokenSecret,
-    "1d"
-  );
+const getRefreshTokenExpirationDate = () => {
+  let date = new Date();
+  date.setDate(date.getDate() - 1);
+  return new Date(date);
+};
+
+const createRefreshToken = async (user) => {
+  const refreshTokenValue = cryptoHandler.generateRandomString();
+  const refreshToken = await RefreshToken.create({
+    valueHash: await cryptoHandler.hash(refreshTokenValue),
+    expirationDate: getRefreshTokenExpirationDate(),
+    owner: user._id,
+  });
+  return {
+    refreshToken,
+    refreshTokenValue,
+  };
 };
 
 const verifyAccessToken = async (accessToken) => {
   const { username, roles } = verifyJwt(
     accessToken,
-    environment.authentication.accessTokenSecret,
+    environment.authentication.accessToken.secret,
     "access token"
   );
   return {
@@ -51,18 +63,14 @@ const verifyAccessToken = async (accessToken) => {
   };
 };
 
-const verifyRefreshToken = async (refreshToken) => {
-  const { username } = verifyJwt(
-    refreshToken,
-    environment.authentication.refreshTokenSecret,
-    "refresh token"
-  );
-  return { username };
+const verifyRefreshToken = (refreshToken) => {
+  if (refreshToken.expirationDate > new Date()) return;
+  throw new Error("Refresh token expired.");
 };
 
 module.exports = {
   generateAccessToken,
-  generateRefreshToken,
+  createRefreshToken,
   verifyAccessToken,
   verifyRefreshToken,
 };

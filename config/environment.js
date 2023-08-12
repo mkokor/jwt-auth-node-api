@@ -8,8 +8,11 @@ module.exports = {
     port: process.env.PORT || 3000,
   },
   authentication: {
-    accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
-    refreshTokenSecret: process.env.REFRESH_TOKEN_SECRET,
-    jwtIssuer: process.env.JWT_ISSUER,
+    accessToken: {
+      secret: process.env.ACCESS_TOKEN_SECRET,
+    },
+    jwt: {
+      issuer: process.env.JWT_ISSUER,
+    },
   },
 };

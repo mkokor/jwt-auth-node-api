@@ -24,7 +24,7 @@ const insertUsers = async (roles = []) => {
       lastName: "Doe",
       username: "johndoe",
       email: "johndoe@email",
-      passwordHash: await cryptoHandler.encrypt("adminprofile123#"),
+      passwordHash: await cryptoHandler.hash("adminprofile123#"),
       roles: roles
         .filter((role) => role.name === "Admin")
         .map((role) => role._id),

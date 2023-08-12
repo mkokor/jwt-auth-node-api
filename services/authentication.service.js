@@ -32,7 +32,7 @@ const checkEmailAvailabilty = async (email) => {
 
 // This function convert password field of user to passwordHash field (field name and field value).
 const hashPassword = async (user) => {
-  user.passwordHash = await cryptoHandler.encrypt(user.password);
+  user.passwordHash = await cryptoHandler.hash(user.password);
   delete user.password;
   return user;
 };
@@ -64,25 +64,31 @@ const validatePassword = async (plaintextPassword, passwordHash) => {
 };
 
 const createRefreshToken = async (user) => {
-  const refreshTokenValue = tokenUtility.generateRefreshToken(user);
-  await RefreshToken.create({
-    valueHash: await cryptoHandler.encrypt(refreshTokenValue),
-    owner: user._id,
-  });
+  const { refreshTokenValue } = await tokenUtility.createRefreshToken(user);
   return refreshTokenValue;
+};
+
+const compareRefreshTokenHash = async (
+  refreshTokenValue,
+  refreshTokenValueHash
+) => {
+  const validation = await cryptoHandler.compare(
+    refreshTokenValue,
+    refreshTokenValueHash
+  );
+  return validation;
 };
 
 const getRefreshTokenByValue = async (value) => {
   const refreshTokens = await RefreshToken.find().populate("owner");
-  const result = await Promise.all(
-    refreshTokens.filter(async (refreshToken) => {
-      const validation = await cryptoHandler.compare(
-        value,
-        refreshToken.valueHash
-      );
-      return validation;
-    })
-  );
+  const result = [];
+  for (const refreshToken of refreshTokens) {
+    const validation = await compareRefreshTokenHash(
+      value,
+      refreshToken.valueHash
+    );
+    if (validation) result.push(refreshToken);
+  }
   if (result.length === 0)
     throw new errors.UnauthenticatedError("Invalid refresh token.");
   return result[0];
@@ -96,7 +102,7 @@ const deleteRefreshToken = async (refreshTokenValue) => {
 const validateRefreshToken = async (refreshTokenValue) => {
   const refreshToken = await getRefreshTokenByValue(refreshTokenValue);
   try {
-    await tokenUtility.verifyRefreshToken(refreshTokenValue);
+    tokenUtility.verifyRefreshToken(refreshToken);
   } catch (error) {
     await deleteRefreshToken(refreshTokenValue);
     throw new errors.UnauthenticatedError("Invalid refresh token.");
@@ -122,7 +128,7 @@ const logInUser = async (loginData) => {
   const refreshToken = await createRefreshToken(user);
   return {
     accessToken: tokenUtility.generateAccessToken(user),
-    refreshToken: refreshToken,
+    refreshToken,
   };
 };
 
