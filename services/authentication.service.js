@@ -145,6 +145,7 @@ const refreshAccessToken = async (refreshTokenValue) => {
 };
 
 const logOutUser = async (refreshTokenValue) => {
+  if (!refreshTokenValue) return;
   await deleteRefreshToken(refreshTokenValue);
 };
 
