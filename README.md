@@ -1,7 +1,7 @@
 # JSON Web Token Authentication and Authorization API
 <p align="justify">
 This repository provides the source code for a Node.js Web API implementing JWT-based authentication and authorization.
-The implementation utilizes Express.js as the foundation for a fast and scalable web server, and MongoDB for persistent data storage. More about JSON Web Tokens can be found at <a href="https://github.com/mkokor/jwt-auth-dotnet-6-api#readme">https://github.com/mkokor/jwt-auth-dotnet-6-api#readme</a>.
+The implementation utilizes Express.js as the foundation for a fast and scalable web server, and MongoDB for persistent data storage. More about JSON Web Tokens can be found at https://github.com/mkokor/jwt-auth-dotnet-6-api#readme.
 </p>
 
 
